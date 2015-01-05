@@ -139,7 +139,6 @@ while running:
 
     window.fill(fillColor)
     window.blit(bg, (0, 0))
-    window.blit(text, (400, 300))
     for cloudPos in clouds:
         cloudPos[0][0] += cloudPos[1]
         if cloudPos[0][0] > 1200:
