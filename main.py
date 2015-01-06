@@ -14,6 +14,7 @@ pygame.display.set_caption(windowCaption)
 
 clock = pygame.time.Clock()
 running = True
+LEFT = 1
 
 # player
 
@@ -51,6 +52,13 @@ class Block():
         self.pos = position
         self.image = image
 
+class GridBlock():
+    pos = []
+
+    def __init__(self, position):
+        self.pos = position
+
+grid = []
 blocks = []
 grassBlockImage = pygame.image.load("res/images/dirt_block.png")
 dirtBlockImage = pygame.image.load("res/images/dirt_bottom_block.png")
@@ -69,7 +77,20 @@ def gen_world():
                 block = Block([xpos, ypos], grassBlockImage)
             blocks.append(block)
 
+def gen_grid():
+    xpos = -32
+    ypos = -32
+    for x in range(0, 25):
+        ypos = -32
+        xpos += 32
+        for y in range(0, 19):
+            ypos += 32
+            block = GridBlock([xpos, ypos])
+            grid.append(block)
+
+
 gen_world()
+gen_grid()
 
 moveLeft = False
 moveRight = False
@@ -97,27 +118,38 @@ while running:
             elif event.key == pygame.K_d:
                 moveRight = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mousePos = pygame.mouse.get_pos()
-            mouseX = mousePos[0]
-            mouseY = mousePos[1]
-            for block in blocks:
-                blockX = block.pos[0]
-                blockY = block.pos[1]
-                if mouseX < blockX + 25 and mouseX + 25 > blockX and mouseY < blockY + 25 and mouseY + 25 > blockY:
-                    # collision detected
-                    blocks.remove(block)
-            for block in blocks:
-                blockX = block.pos[0]
-                blockY = block.pos[1]
+            if event.button == LEFT:
+                mousePos = pygame.mouse.get_pos()
+                mouseX = mousePos[0]
+                mouseY = mousePos[1]
+                for block in blocks:
+                    blockX = block.pos[0]
+                    blockY = block.pos[1]
+                    if mouseX < blockX + 25 and mouseX + 25 > blockX and mouseY < blockY + 25 and mouseY + 25 > blockY:
+                        # collision detected
+                        blocks.remove(block)
+                for block in blocks:
+                    blockX = block.pos[0]
+                    blockY = block.pos[1]
 
-                if not blockX < playerX + 30 and blockX + 30 > playerX and blockY < playerY + 30 and blockY + 30 > playerX:
-                    player.gravity = -0.03
+                    if not blockX < playerX + 32 and blockX + 32 > playerX and blockY < playerY + 32 and blockY + 32 > playerX:
+                        player.gravity = -0.03
+            else:
+                mousePos = pygame.mouse.get_pos()
+                mouseX = mousePos[0]
+                mouseY = mousePos[1]
+                for block in grid:
+                    blockX = block.pos[0]
+                    blockY = block.pos[1]
+                    if mouseX < blockX + 25 and mouseX + 25 > blockX and mouseY < blockY + 25 and mouseY + 25 > blockY:
+                        block = Block(block.pos, dirtBlockImage)
+                        blocks.append(block)
 
     for block in blocks:
         blockX = block.pos[0]
         blockY = block.pos[1]
 
-        if blockX < playerX + 33 and blockX + 33 > playerX and blockY < playerY + 33 and blockY + 33 > playerX:
+        if blockX < playerX + 32 and blockX + 32 > playerX and blockY < playerY + 32 and blockY + 32 > playerX:
             player.gravity = 0
             onGround = True
         else:
